@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core'
 import { userActions } from '../../_actions'
 import { CustomInput } from '../../_components'
-import { Button, Grid, InputAdornment, FormControl } from '@material-ui/core'
+import { Button, Grid, InputAdornment, FormControl, FormHelperText } from '@material-ui/core'
 
  import { Person, Lock } from '@material-ui/icons'
 
@@ -27,7 +27,7 @@ const styles = (theme) => ({
   form: {
     width: '100%',
     marginTop: theme.spacing(1),
-    '& :not(*:first-child)': {
+    '& > *': {
       marginTop: 8
     }
   },
@@ -52,7 +52,8 @@ class LoginPage extends React.Component {
             username: 'Username',
             password: 'Password',
             submitted: false,
-            error: false
+            error: false,
+            validate: false
         };
 
         this.handleChange = this.handleChange.bind(this)
@@ -68,22 +69,25 @@ class LoginPage extends React.Component {
     handleSubmit(e) {
         e.preventDefault()
 
-        this.setState({ submitted: true })
+        this.setState({ submitted: true, validate: false })
         const { username, password } = this.state
         if (username && password) {
             this.props.login(username, password)
+        } else {
+          console.log('validate')
+          this.setState({ validate: true })
         }
     }
 
     render() {
         const { classes } = this.props
-        const { username, password } = this.state
+        const { username, password, validate } = this.state
         return (
           <Grid container component="main" className={classes.root} alignItems={'center'} justify={'center'}>
             <Grid container item className={classes.formContainer} justify={'center'}>
               <img src={Logo} className={classes.appLogo} alt="logo" />
               <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
-                <FormControl fullWidth>
+                <FormControl fullWidth error={!username && validate}>
                   <CustomInput
                     variant="filled"
                     id="username"   
@@ -93,8 +97,9 @@ class LoginPage extends React.Component {
                     onChange={this.handleChange}
                     startAdornment={<InputAdornment position="start"><Person/></InputAdornment>}
                   />
+                  {!username && validate && <FormHelperText id="component-error-text">Username is required</FormHelperText>} 
                 </FormControl>
-                <FormControl fullWidth>
+                <FormControl fullWidth error={!password && validate}>
                   <CustomInput
                     variant="filled"
                     id="standard-adornment-weight"
@@ -105,6 +110,7 @@ class LoginPage extends React.Component {
                     onChange={this.handleChange}
                     startAdornment={<InputAdornment position="start"><Lock/></InputAdornment>}
                   />
+                  {!password && validate && <FormHelperText id="component-error-text">Password is required</FormHelperText>} 
                 </FormControl>
                 <FormControl fullWidth>
                   <Button
@@ -123,12 +129,10 @@ class LoginPage extends React.Component {
     }
 }
 
-
-
 const actionCreators = {
     login: userActions.login,
     logout: userActions.logout
 };
 
-const connectedLoginPage = connect(()=>{return {}}, actionCreators)(withStyles(styles)(LoginPage))
+const connectedLoginPage = connect(()=>{ return{} }, actionCreators)(withStyles(styles)(LoginPage))
 export { connectedLoginPage as LoginPage }

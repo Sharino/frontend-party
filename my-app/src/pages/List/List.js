@@ -18,7 +18,7 @@ const styles = (theme) => ({
       marginRight: 18
   },
   logoutBtn: {
-    textDecorationLine: 'none',
+    textDecoration: 'none',
     '&:active': {
       color: 'inherit'
     },
