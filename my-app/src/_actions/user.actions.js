@@ -10,27 +10,27 @@ export const userActions = {
 
 function login(username, password) {
     return dispatch => {
-        dispatch(request({ username }));
+        dispatch(request({ username }))
 
         userService.login(username, password)
             .then(
-                user => { 
-                    dispatch(success(user));
-                    history.push('/');
+                token => { 
+                    dispatch(success(token))
+                    history.push('/')
                 },
                 error => {
-                    dispatch(failure(error));
-                    dispatch(alertActions.error(error));
+                    dispatch(failure(error))
+                    dispatch(alertActions.error(error))
                 }
             );
     };
 
     function request(user) { return { type: userConstants.LOGIN_REQUEST, user } }
-    function success(user) { return { type: userConstants.LOGIN_SUCCESS, user } }
+    function success(token) { return { type: userConstants.LOGIN_SUCCESS, token } }
     function failure(error) { return { type: userConstants.LOGIN_FAILURE, error } }
 }
 
 function logout() {
-    userService.logout();
-    return { type: userConstants.LOGOUT };
+    userService.logout()
+    return { type: userConstants.LOGOUT }
 }

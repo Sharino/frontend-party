@@ -1,68 +1,68 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
 
-import { userActions } from '../../_actions';
-import { Button, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { serverActions } from '../../_actions'
+import { Button, Grid } from '@material-ui/core'
+import { withStyles } from '@material-ui/core'
 
 import Logo from '../../assets/images/logo-dark.svg'
 import Logout from '../../assets/images/logout.svg'
 
-import Table from '../../components/Table'
+import { EnhancedTable as Table } from '../../_components'
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    
-  },
+const styles = (theme) => ({
   appHeader: {
       height: 112,
       marginLeft: 18,
       marginRight: 18
   },
   logoutBtn: {
-    '&:hover': {
+    textDecorationLine: 'none',
+    '&:active': {
+      color: 'inherit'
+    },
+    '& :hover': {
       backgroundColor: '#99cc33'
     }
   }
-}));
+});
 
-const HomePage = (props) => {
-  const classes = useStyles();
-  const { user, users } = props;
+class HomePage extends React.Component {
+  componentDidMount() {
+    this.props.getAll();
+  }
 
-  return (
-    <Grid container component="main" className={classes.root}>
-      <Grid container component="header" justify={'space-between'} alignItems={'center'} className={classes.appHeader}> 
-        <img src={Logo} alt="logo" />
-        
-        <Link to="/login">
-          <Button 
-            startIcon={<img src={Logout} alt="logout-logo"/>}
-            className={classes.logoutBtn}>
-              Log out
-          </Button>
-        </Link>
-        
-     
+  render() {
+    const { classes, servers } = this.props
+    return (
+      <Grid container component="main" className={classes.root}>
+        <Grid container component="header" justify={'space-between'} alignItems={'center'} className={classes.appHeader}> 
+          <img src={Logo} alt="logo" />
+          <Link to="/login" className={classes.logoutBtn}>
+            <Button startIcon={<img src={Logout} alt="logout-logo"/>}>
+                Log out
+            </Button>
+          </Link>     
+        </Grid>
+        <Grid container >
+          <Table 
+            rows={servers}
+          />
+        </Grid>
       </Grid>
-      <Grid container >
-        <Table />
-      </Grid>
-    </Grid>
-  ); 
+    );
+  }
 }
 
 function mapState(state) {
-    const { users, authentication } = state;
-    const { user } = authentication;
-    return { user, users };
+    const { servers } = state;
+    return { servers };
 }
 
 const actionCreators = {
-    getUsers: userActions.getAll,
-    deleteUser: userActions.delete
+    getAll: serverActions.getList
 }
 
-const connectedHomePage = connect(mapState, actionCreators)(HomePage);
+const connectedHomePage = connect(mapState, actionCreators)(withStyles(styles)(HomePage));
 export { connectedHomePage as HomePage };

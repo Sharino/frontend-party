@@ -1,9 +1,8 @@
 import React from 'react'
 import { Router, Route, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
-// import store from './store'
-import { Button, Snackbar, IconButton } from '@material-ui/core';
- import { Close } from '@material-ui/icons';
+import { Snackbar, IconButton, Backdrop, CircularProgress } from '@material-ui/core'
+ import { Close } from '@material-ui/icons'
 
 import { history } from './_helpers'
 import { alertActions } from './_actions'
@@ -12,15 +11,17 @@ import { PrivateRoute } from './_components'
 import { LoginPage } from "./pages/Login"
 import { HomePage } from "./pages/List"
 
+import { styled } from '@material-ui/core/styles'
 
-// import logo from './logo.svg';
-// import './App.css';
+const StyledBackdrop = styled(Backdrop)({
+    zIndex: 777,
+    color: '#fff',
+});
+
 class App extends React.Component {
     constructor(props) {
         super(props);
-
         history.listen((location, action) => {
-            // clear alert on location change
             this.props.clearAlerts();
         });
     }
@@ -33,7 +34,7 @@ class App extends React.Component {
     };
 
     render() {
-        const { alert } = this.props;
+        const { alert, loggingIn } = this.props
         return (
           <div className="App">
             <Snackbar
@@ -41,7 +42,7 @@ class App extends React.Component {
                 vertical: 'bottom',
                 horizontal: 'left',
               }}
-              open={alert && alert.message}
+              open={alert.type === 'alert-danger'}
               autoHideDuration={6000}
               onClose={this.handleClose}
               message={alert.message}
@@ -53,6 +54,9 @@ class App extends React.Component {
                 </React.Fragment>
               }
             />
+            <StyledBackdrop open={loggingIn || false}>
+              <CircularProgress color="inherit" />
+            </StyledBackdrop>
             <Router history={history}>
               <Switch>
                 <PrivateRoute exact path="/" component={HomePage} />
@@ -65,25 +69,16 @@ class App extends React.Component {
     }
 }
 
-// const App = () => (
-//   <Provider store={store}>
-//     <div className="App">
-//       <Router>
-//         <Route exact path='/' component={Login} />
-//         <Route exact path='/List' component={List} />
-//       </Router>
-//     </div>
-//   </Provider>
-// )
-
 function mapState(state) {
-    const { alert } = state;
-    return { alert };
+    const { alert } = state
+    const { loggingIn } = state.authentication
+    return { alert, loggingIn }
 }
 
 const actionCreators = {
-    clearAlerts: alertActions.clear
+    clearAlerts: alertActions.clear,
+    errorAlert: alertActions.error
 };
 
-const connectedApp = connect(mapState, actionCreators)(App);
-export default connectedApp;
+const connectedApp = connect(mapState, actionCreators)(App)
+export default connectedApp

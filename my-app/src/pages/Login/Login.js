@@ -1,12 +1,11 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core'
-import { userActions } from '../../_actions';
-import { Button, Grid, InputAdornment, FormControl, Input } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { userActions } from '../../_actions'
+import { CustomInput } from '../../_components'
+import { Button, Grid, InputAdornment, FormControl } from '@material-ui/core'
 
- import { Person, Lock } from '@material-ui/icons';
+ import { Person, Lock } from '@material-ui/icons'
 
 import Background from '../../assets/images/background.svg'
 import Logo from '../../assets/images/logo.svg'
@@ -26,7 +25,7 @@ const styles = (theme) => ({
     marginBottom: 60
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: '100%',
     marginTop: theme.spacing(1),
     '& :not(*:first-child)': {
       marginTop: 8
@@ -43,32 +42,11 @@ const styles = (theme) => ({
   
 });
 
-const CustomInput = withStyles({
-  root: {
-    overflow: 'hidden',
-    color: '#B3B3B3',
-    borderRadius: 4,
-    backgroundColor: '#fff',
-    padding: 8,
-    '&:hover': {
-      backgroundColor: '#fff'
-    },
-    '&$focused': {
-      color: '#999',
-      backgroundColor: '#fff'
-    },
-  },
-  focused: {
-    backgroundColor: '#fff'
-  }
-})(Input);
-
 class LoginPage extends React.Component {
     constructor(props) {
         super(props);
 
-        // reset login status
-        this.props.logout();
+        this.props.logout()
 
         this.state = {
             username: 'Username',
@@ -77,36 +55,33 @@ class LoginPage extends React.Component {
             error: false
         };
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
             
     }
 
-
-
     handleChange(e) {
-        const { name, value } = e.target;
-        this.setState({ [name]: value });
+        const { name, value } = e.target
+        this.setState({ [name]: value })
     }
 
     handleSubmit(e) {
-        e.preventDefault();
+        e.preventDefault()
 
-        this.setState({ submitted: true });
-        const { username, password } = this.state;
+        this.setState({ submitted: true })
+        const { username, password } = this.state
         if (username && password) {
             this.props.login(username, password)
         }
     }
 
     render() {
-        const { classes, loggingIn } = this.props;
-        const { username, password } = this.state;
+        const { classes } = this.props
+        const { username, password } = this.state
         return (
           <Grid container component="main" className={classes.root} alignItems={'center'} justify={'center'}>
             <Grid container item className={classes.formContainer} justify={'center'}>
               <img src={Logo} className={classes.appLogo} alt="logo" />
-              {loggingIn}
               <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
                 <FormControl fullWidth>
                   <CustomInput
@@ -143,24 +118,17 @@ class LoginPage extends React.Component {
                 </FormControl>
               </form>
             </Grid>
-            {/* <Backdrop className={classes.backdrop} open={loggingIn}>
-              <CircularProgress color="inherit" />
-            </Backdrop> */}
-            
           </Grid>
         );
     }
 }
 
-function mapState(state) {
-    const { loggingIn } = state.authentication;
-    return { loggingIn };
-}
+
 
 const actionCreators = {
     login: userActions.login,
     logout: userActions.logout
 };
 
-const connectedLoginPage = connect(mapState, actionCreators)(withStyles(styles)(LoginPage));
-export { connectedLoginPage as LoginPage };
+const connectedLoginPage = connect(()=>{return {}}, actionCreators)(withStyles(styles)(LoginPage))
+export { connectedLoginPage as LoginPage }
